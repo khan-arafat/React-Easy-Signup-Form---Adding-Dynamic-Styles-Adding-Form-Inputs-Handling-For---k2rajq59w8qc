@@ -67,7 +67,7 @@ const App = () => {
       <label htmlFor='consent'>I agree?</label>
       <input type='checkbox' id='consent'></input>
       </div>
-      <button>Sign Up</button>
+      <button type='submit'>Sign Up</button>
     </form>
     </>
   )
