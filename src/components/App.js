@@ -1,77 +1,65 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect} from 'react'
 import '../styles/App.css';
 import '../utils/validation.js';
 import { signUpFormValidation } from '../utils/validation.js';
 
 const App = () => {
-  const [name, setName] = useState('');
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [nameDisplay, setNameDisplay] = useState('');
-  const [emailDisplay, setEmailDisplay] = useState('');
-  const [passDisplay, setPassDisplay] = useState('');
-  function validateForm(){
-    const dataCollected = {
-      name: `${name}`,
-      email:`${email}`,
-      password: `${password}`,
-    };
-    let errorGenerated = signUpFormValidation(dataCollected);
-      Object.keys(errorGenerated).map((er)=>{
-        console.log(errorGenerated);
-        if(er==='name'){
-          setNameDisplay(errorGenerated.name);
-        }
-        else{
-          setNameDisplay('');
-        }
-        if(er==='email'){
-          setEmailDisplay(errorGenerated.email);
-        }
-        else{
-          setEmailDisplay('');
-        }
-        if(er==='password'){
-          setPassDisplay(errorGenerated.password);
-        }
-        else {
-          setPassDisplay('');
-        }
-    })
+  const [formData, setFormData] = useState({});
+  const [isSubmit, setSubmit] = useState(false);
+  const [error, setError] = useState({
+    name:"",
+    email:"",
+    password:""
+  });
+  const handleForm = (e) => {
+    setFormData({ ...formData, [e.target.id]:(e.target.value)});
+  };
+  const handleSubmit=(e)=>{
+    setSubmit(true);
+    e.preventDefault();
+    setError(signUpFormValidation(formData))
   }
-  const verified = (event)=>{
-    event.preventDefault();
-    if(nameDisplay!=='' || passDisplay!=='' || emailDisplay!==''){
-      return;
-    }
-  }
+  useEffect(()=>{
+    setError(signUpFormValidation(formData));
+    return ()=>{
+      if(isSubmit){
+        setError(null);
+      }
+    } 
+    }, [formData])
   return (
-    <>
-    <form onSubmit={verified}>
-      <div>
-      <label htmlFor='name'>Name:</label>
-      <input type='text' id='name' onChange={(e)=>{setName(e.target.value); validateForm()}}></input>
-      </div>
-      <div>{nameDisplay}</div>
-      <div>
-      <label htmlFor='email'>Email:</label>
-      <input type='text' id='email' onChange={(e)=>{setEmail(e.target.value); validateForm()}}></input>
-      </div>
-      <div>{emailDisplay}</div>
-      <div>
-      <label htmlFor='password'>Password:</label>
-      <input type='text' id='password' onChange={(e)=>{setPassword(e.target.value); validateForm()}}></input>
-      </div>
-      <div>{passDisplay}</div>
-      <div>
-      <label htmlFor='consent'>I agree?</label>
-      <input type='checkbox' id='consent'></input>
-      </div>
-      <button type='submit'>Sign Up</button>
-    </form>
-    </>
+    <div>
+      <form onSubmit={handleSubmit}>
+      <label htmlFor="name">Name:</label>
+          <input
+            type="text"
+            id="name"
+            value={formData.name}
+            onChange={handleForm}
+          />
+        <div>{error=== null ? "": error.name}</div>
+        <label htmlFor="email">Email:</label>
+          <input
+            type="text"
+            id="email"
+            value={formData.email}
+            onChange={handleForm}
+          />
+        <div>{error=== null ?  "": error.email}</div>
+        <label htmlFor="password">Password:</label>
+          <input
+            type="password"
+            id="password"
+            value={formData.password}
+            onChange={handleForm}
+          />
+        <div>{error=== null ? "": error.password}</div>
+        <input type="checkbox" id="consent" />
+        <label htmlFor="consent">I agree?</label>
+        <button type="submit">Signup</button>
+      </form>
+    </div>
   )
-}
-
+};
 
 export default App;
